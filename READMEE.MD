@@ -1,0 +1,160 @@
+# Luau showcase repository
+
+This is an open source Luau project that demonstrates my abilities as a programmer to
+the the [Quantum Science Structural Team](https://www.roblox.com/groups/2847031
+Quantum-Science-Inc#!/about) for an application.
+
+All files were compiled from a [Rojo](https://github.com/rojo-rbx/rojo) client to a
+file structure that Roblox's compiler can understand. This means that the default
+Roblox Script Editor was not used and instead Visual Studio Code was used as an
+alternative to provide support for GitHub.
+I also used [Better Comments](https://github.com/aaron-bond/better-comments)
+throughout this project to help visuallize special and/or important parts of the
+codebase.
+
+To view the source code project that I personally interacted with, please visit this
+GitHub link to access the project online:
+* https://www.github.com/
+
+Or by visiting the Roblox place that contains these files in a Roblox format:
+* https://www.roblox.com
+
+### *Both source code and binary files are listed on GitHub for purposes that you easily access the work presented.*
+
+---
+	This project covers Trial #1 - Server-Sided Scripting (Make a door system)
+	
+	Rules:
+	Doorscan be open or shut by toggle. Some of the doors should be keycard
+	restricted and therefore only accept keycards of their respective levels
+	(Employee, Security, and Admin). The doors themselves should be interactable via
+	Proximity Prompt.
+
+	This project also covers Trial #2 - Server > Client Scripting (Make a chat system)
+	
+	Rules:
+	Make a custom chatting system (like you'd find on a workplace computer). The
+	messages inputted by players should be filtered (Roblox filter) for other users,
+	as well as having little to no security vulnerabilities.
+---
+
+# Door Server Scripting (Trial #1)
+
+I have created two variants of this trial as the rules make showcasing my general
+programming knowlege more restrictive of what I would like to provide. So for this
+trial:
+
+* `Variant A` will be a true to the trial rules and will not deviate from the practices
+* `Variant B` will focus on improving this system further on an alternative to provide better optimizations and customizable behaviors of said showcase.
+
+## Variant A (True to the trial system)
+For this trial, I made a simple system that would showcase the code for my system
+server side only. These files are located in:
+
+* [src/server/doorVariantA/](srs/server/doorVariantB)
+(game.ServerScriptService.server.doorVarientA)
+* [srs/shared/Animations/Doors/](src/shared/Animations/Doors)
+(game.ReplicatedStorage.Common.Animations.Doors)
+
+For this system, I also know that other developers need to implement these doors as
+easy as possible throughout the development cycle of any game. Thus, I provide
+templates that have basic visual representation of the doors in the editor. When the
+game is compiled, the server will replace these objects with the door models in
+common storage (game.ReplicatedStorage.common.Assets.Doors).
+
+To further make this system easier to use, it grabs the door model by name - meaning
+multiple door variants can be used and the developer in question can easily edit what
+door will be spawned in the desired locations.
+
+Using luau, I am able to create a simple database of all doors in the game, thus
+providing flexibality in how data of the door classes are stored in tokens. The
+server will handle all the important aspects such as providing ProximityPrompts to
+the door models and when triggered, will allow the door to run checks on the player's
+permissions and check the door state.
+
+If all these are correct, it then proceeds to run a custom animation system that is
+easy to modify for both, scripters and animators. It uses only 2 functions that are
+required by using the animation type made with luau: `trueState()` and `falseState()`.
+These two functions are what will be triggered if the door will close or open
+depending on their "state" in the corresponding token.
+
+This system however does have flaws. Currently, the animations run server sided and
+when played, looks choppy as their are depending on the server's tick rate.
+
+Thus I provide you an alternative solution:
+
+## Varient B
+Varient B applies the current system of Varient A but makes the door tokens client
+sided and ONLY rendered client sided. To do this, we must set up a server database
+system that can handle client requests and respond back to them like traditional
+client > server > client architechures. The server files are located in:
+
+* [src/server/doorVariantB/](/src/server/doorVarientB/)
+(game.ServerScriptService.server.doorVariantB)
+
+In these files, you can see the use of optimizing array structures for data packets
+which will be useful for providing both client and server data that can be processed
+This data can also be used to do mandetory checks to make sure that the data the
+server receives is valid and not exploited by the client.
+
+The permissions system is also server sided, and can also be expanded upon further
+for checking player ranks in other systems and also checking the distance from the
+door itself.
+
+Just like the previous variant, the server will compile all the doors into
+identifiers but will **not** remove the node. Instead, the node will be sent to all
+clients when they request the node positions for processing. The server makes a list
+in the database of each node including a token the server generates that includes the
+state of each door corresponding to the node.
+
+Lastly, once it is done compiling, it will also provide a hook for the clients to
+send data to in `game.ReplicatedStorage.Hooks`.
+
+Lets see how the client can access these nodes. The files for this are located:
+
+* [src/client/doorVarientB](srs/client/doorVariantB/)
+(game.StarterPlayer.StarterPlayerScripts.client.variantB)
+**or** (game.Players.***ClientName***.PlayerScripts.client.variantB)
+
+* [srs/shared/Animations/Doors/](srs/shared/Animations/Doors/)
+(game.ReplicatedStorage.Common.Animations.Doors)
+
+In the client, the system will grab all the nodes generated by the server, then sends
+a request to the server that asks for the entire database of doors. This is a big
+packet and should only be done once per client. The client will process each node and
+spawn the appropriate door using the data from the database (server). It then
+proceeds to make a local database to store the records of each door and what
+identifier it is on the server. So calling something like doordatabase[3] will be the
+third record in the server database as well.
+
+The client will also create ProximityPrompts just like how the server would for
+Variant A. However, this time the client will **ONLY** send the data for the door in
+question to toggle state. This will allow the server to check its records for that
+door class, check the permissions of the client server sided providing extra
+security, and will send this data to every client connected to the server the new
+state of the door (keeping everything in sync). All clients receive the data from the
+server (including the one who requested it) and fires the appropriate animation file
+like Varrient A does.
+
+It is worth noting here that the aditional arguement will allow for doors to animate
+smoothly or instantly to their programmed values in the animation file when the
+client loads the animation. Useful for updating clients the state of doors when they
+are out of sync.
+
+	There you have it! Smooth animations on doors that provide less data in the
+	DataPackets being thrown around on the network from only server sided animations
+	- less laggier in both frames and network pings!
+
+### Hopefully you do consider this option more viable than varient A!
+
+---
+
+# Chat System (Trial #2)
+This system requires the server to store messages sent by players in a table
+database. We can also set a certain amount of messages that the database should store
+to prevent high memory usages after super long server sessions (super unlikely but
+just to be safe!).
+
+
+
+## For further enquires, please contact my Discord: **`Watermelon#3990`**

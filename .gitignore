@@ -1,0 +1,10 @@
+# Project place file
+/Trial.rbxlx
+
+# Roblox Studio lock files
+/*.rbxlx.lock
+/*.rbxl.lock
+
+# Binaries and Dump folder
+bin
+dump
