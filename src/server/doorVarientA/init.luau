@@ -4,8 +4,10 @@
 
 local class = {}
 
-local animList: {[string]: any} = require(script.animLoader):Compile()
-local perms = require(script.doorPermissions) :: any -- a list of usable permissions
+local replicatedStorage = game:GetService("ReplicatedStorage")
+
+local animList: {[string]: any} = require(replicatedStorage.Common.animLoader):Compile()
+local perms = require(replicatedStorage.Common.doorPermissions) :: any -- a list of usable permissions
 
 -- A type checker to make sure that items being added into memory are in fact data that relate to this type.
 type blockToken = {
@@ -15,10 +17,11 @@ type blockToken = {
 	debounce: boolean,
 	security: number,
 	doorType: string,
-	originalCFrame: CFrame
+	originalCFrame: CFrame,
+	keycardHolders: {Model}
 }
 
-local replicatedStorage = game:GetService("ReplicatedStorage")
+
 
 -- Creation of a noSQL database using a sealed table of all interactable doors that will be loaded into memory.
 local blockStorage: {[number]: blockToken} = {}
@@ -27,17 +30,77 @@ local blockStorage: {[number]: blockToken} = {}
 local addToken = function(itterationID: number, arg_ref: Part, arg_security: number?, arg_state: boolean?)
 
 	local door_ref: Model = replicatedStorage.Assets.Doors:FindFirstChild(arg_ref.Name):Clone()
+	local securityAttribute: number =  arg_ref:GetAttribute("security")
+
 	door_ref:SetPrimaryPartCFrame(arg_ref.CFrame)
+
+	local keycardSet: {Model} = {}
+	local children = arg_ref:GetChildren()
+
+	for itteration = 1, #children do
+		if children[itteration].Name == "cardHolder" and securityAttribute ~= 0 then
+			local cardHolder = replicatedStorage.Assets.Doors.cardHolder:Clone()
+			cardHolder.PrimaryPart.BrickColor = perms.getColor(securityAttribute)
+			cardHolder.display.ui.value.Text = securityAttribute
+			cardHolder.Parent = workspace.LevelInteractions.KeycardHolders
+			cardHolder:SetPrimaryPartCFrame(children[itteration].CFrame)
+			table.insert(keycardSet, cardHolder)
+		end
+	end
 	
 	local token: blockToken = {
-		doorID = itterationID,                           --* assigns a referencable identifier for clients
-		ref = door_ref,                                  --* assigns a model reference for the token
-		state = arg_state or false,                      --* the current state of the door: close, open
-		debounce = true,                                 --* checks if the server must wait before calling a state change to the door token
-		security = arg_security or 0,                    --* the minimum requirement for opening the door
-		doorType = arg_ref.Name or "unkown",             --* required if animations are needed
-		originalCFrame = door_ref:GetPrimaryPartCFrame() --* in case something happens, this will reset the door state back to their original state when the server compiled the information
+		doorID = itterationID,                            --* assigns a referencable identifier for clients
+		ref = door_ref,                                   --* assigns a model reference for the token
+		state = arg_state or false,                       --* the current state of the door: close, open
+		debounce = true,                                  --* checks if the server must wait before calling a state change to the door token
+		security = securityAttribute or 0,                     --* the minimum requirement for opening the door
+		doorType = arg_ref.Name or "unkown",              --* required if animations are needed
+		originalCFrame = door_ref:GetPrimaryPartCFrame(), --* in case something happens, this will reset the door state back to their original state when the server compiled the information
+		keycardHolders = keycardSet                       --* A list of keycard models for animation purposes
 	}
+
+	local function createProx(parent: any)
+		local PP: ProximityPrompt = Instance.new("ProximityPrompt")
+		PP.Name = "proxPrompt"
+		PP.ObjectText = "Door"
+		PP.ActionText = "Open/Close"
+		PP.KeyboardKeyCode = Enum.KeyCode.E
+		PP.RequiresLineOfSight = true
+		PP.MaxActivationDistance = 4
+		PP.ClickablePrompt = false
+		PP.HoldDuration = 0.2
+
+		PP.Parent = parent
+
+		PP.Triggered:Connect(function(client: Player)
+			if token.debounce and perms.getSecurityPerms(client, token.security) then
+				token.state = not token.state
+
+				local timer: number = 0
+
+				perms.getSecurityPerms(client, token.security)
+
+				if token.debounce then
+
+					token.debounce = false
+
+					if token.state then
+						if parent.Name == "cardHolder" and parent:IsA("Model") then
+							timer = 0.5
+							animList["cardReader"].playState(parent, timer)
+						end
+						animList[token.doorType].trueState(token, timer, false)
+					else
+						animList[token.doorType].falseState(token, timer, false)
+					end
+
+					task.delay(2 + timer, function() token.debounce = true end) -- Create thread and execute after 4 seconds in the task scheduler
+				end
+			end
+		end)
+
+		return PP
+	end
 	
 	door_ref.Name =	 string.format("%s%s%s", itterationID, "_", arg_ref.Name) -- Create unique identifiers for clients to reference.
 	arg_ref:Destroy()
@@ -45,31 +108,20 @@ local addToken = function(itterationID: number, arg_ref: Part, arg_security: num
 
 	blockStorage[itterationID] = token
 
-	local PP: ProximityPrompt = Instance.new("ProximityPrompt")
-	PP.Name = "proxPrompt"
-	PP.ObjectText = "Door"
-	PP.ActionText = "Open/Close"
-	PP.KeyboardKeyCode = Enum.KeyCode.E
-	PP.Parent = door_ref.PrimaryPart
-	PP.RequiresLineOfSight = false
-	PP.MaxActivationDistance = 4
-	PP.ClickablePrompt = false
-	PP.HoldDuration = 0.2
-
-	PP.Triggered:Connect(function(client)
-		if token.debounce and perms.getSecurityPerms(client, token.security) then
-			token.state = not token.state
-			if token.state then
-				animList[token.doorType].trueState(token, false)
-			else
-				animList[token.doorType].falseState(token, false)
-			end
+	if #token.keycardHolders == 0 then
+		createProx(door_ref.trigger).RequiresLineOfSight = false
+	else
+		for itteration = 1, #token.keycardHolders do
+			createProx(token.keycardHolders[itteration])
 		end
-	end)
-
+	end
 end
 
 function class.init()
+
+	local keycardHolder_Folder: Folder = Instance.new("Folder")
+	keycardHolder_Folder.Name = "KeycardHolders"
+	keycardHolder_Folder.Parent = workspace.LevelInteractions
 
 	for itteration, value in pairs(workspace.LevelInteractions.ServerDoors:GetChildren()) do
 		addToken(itteration, value)

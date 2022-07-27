@@ -62,7 +62,7 @@ end
 -- Initialize the class once on runtime
 function class.init()
 
-	local animList: {[string]: any} = require(script.animLoader):Compile()
+	local animList: {[string]: any} = require(replicatedStorage.Common.animLoader):Compile()
 
 	local doorRE: RemoteEvent = replicatedStorage.Hooks.DoorHook
 
@@ -86,9 +86,9 @@ function class.init()
 				local ref = blockStorage[value.doorID]
 
 				if value.state then
-					animList[value.doorType].trueState(ref, true)
+					animList[value.doorType].trueState(ref, 0, true)
 				else
-					animList[value.doorType].falseState(ref, true)
+					animList[value.doorType].falseState(ref, 0, true)
 					
 				end
 			end

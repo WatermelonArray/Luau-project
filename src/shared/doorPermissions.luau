@@ -6,7 +6,7 @@ local perms: {[string]: number} = {
 
 	--*["TeamName"] = 0  -- the id of rank
 
-	["Visitor"] = 0, -- Visitor
+	["Visitor"] = 0,
 	["Employees"] = 1,
 	["Maintenance"] = 1,
 	["Security"] = 2,
@@ -16,14 +16,30 @@ local perms: {[string]: number} = {
 
 }
 
+local colors: {[number]: BrickColor} = {
+
+	--*[securityLevel] = BrickColor  -- the color of the security for cosmetic purposes
+
+	[0] = BrickColor.new("White"),
+	[1] = BrickColor.new("Bright orange"),
+	[2] = BrickColor.new("Sand violet metallic"),
+	[3] = BrickColor.new("Dark grey metallic"),
+
+}
+
+class.getColor = function(security: number) return colors[security] or BrickColor.new("Flame reddish orange") end
+
 class.getSecurityPerms = function(client: Player, security: number)
 
 	local team: Team? = client.Team :: Team
 
 	if team then
-		local teamString: string? = team.Name :: string
-		if teamString and perms[teamString] then
-			return perms[teamString] >= security
+		local teamString: string = team.Name
+
+		local result = perms[teamString] or 0
+
+		if teamString then
+			return result >= security
 		end
 	end
 

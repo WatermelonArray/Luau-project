@@ -4,7 +4,7 @@ local anim: any = {}
 
 local tweenService = game:GetService("TweenService")
 
-function anim.trueState(token: any, instant: boolean?)
+function anim.trueState(token: any, timer: number, instant: boolean?)
 
 	local r: any = token.ref.render
 	local a: BasePart = r.animA
@@ -19,8 +19,8 @@ function anim.trueState(token: any, instant: boolean?)
 		detailTime = 0
 	end
 
-	local twRoot: TweenInfo = TweenInfo.new(rootTime, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, detailTime)
-	local twDetail: TweenInfo = TweenInfo.new(detailTime, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut, 0, true)
+	local twRoot: TweenInfo = TweenInfo.new(rootTime, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, detailTime + timer)
+	local twDetail: TweenInfo = TweenInfo.new(detailTime, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut, 0, true, timer)
 
 	local pivotPoint: CFrame = CFrame.new(2, 0, 0)
 
@@ -51,7 +51,7 @@ function anim.trueState(token: any, instant: boolean?)
 
 end
 
-function anim.falseState(token: any, instant: boolean?)
+function anim.falseState(token: any, timer: number, instant: boolean?)
 
 	local r: any = token.ref.render
 
@@ -63,7 +63,7 @@ function anim.falseState(token: any, instant: boolean?)
 		rootTime = 0
 	end
 
-	local twRoot: TweenInfo = TweenInfo.new(rootTime, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+	local twRoot: TweenInfo = TweenInfo.new(rootTime, Enum.EasingStyle.Quad, Enum.EasingDirection.In, 0, false, timer)
 
 	local pivotPoint: CFrame = CFrame.new(2, 0, 0)
 

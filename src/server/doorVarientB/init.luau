@@ -1,8 +1,12 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 --!strict
 
-local perms = require(script.doorPermissions) :: any -- a list of usable permissions
 
 local class = {}
+
+local replicatedStorage = game:GetService("ReplicatedStorage")
+
+local perms = require(replicatedStorage.Common.doorPermissions) :: any -- a list of usable permissions
 
 -- A type checker to make sure that items being added into memory are in fact data that relate to this type.
 type blockToken = {
