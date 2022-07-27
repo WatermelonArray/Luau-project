@@ -4,15 +4,17 @@
 
 local class = {}
 
-local replicatedStorage = game:GetService("ReplicatedStorage")
+local replicatedStorage = game:GetService("ReplicatedStorage") :: any
 
-local animList: {[string]: any} = require(replicatedStorage.Common.animLoader):Compile()
+local levelInteractions = workspace:FindFirstChild("LevelInteractions") :: any
+
+local animList: {[string]: any} = require(replicatedStorage.Common.animLoader):Compile() :: any
 local perms = require(replicatedStorage.Common.doorPermissions) :: any -- a list of usable permissions
 
 -- A type checker to make sure that items being added into memory are in fact data that relate to this type.
 type blockToken = {
 	doorID: number,
-	doorRef: Model,
+	ref: Model,
 	state: boolean,
 	debounce: boolean,
 	security: number,
@@ -21,15 +23,13 @@ type blockToken = {
 	keycardHolders: {Model}
 }
 
-
-
 -- Creation of a noSQL database using a sealed table of all interactable doors that will be loaded into memory.
 local blockStorage: {[number]: blockToken} = {}
 
 -- Create tokens in blockStorage corresponding to each door part
 local addToken = function(itterationID: number, arg_ref: Part, arg_security: number?, arg_state: boolean?)
 
-	local door_ref: Model = replicatedStorage.Assets.Doors:FindFirstChild(arg_ref.Name):Clone()
+	local door_ref: any = replicatedStorage.Assets.Doors:FindFirstChild(arg_ref.Name):Clone()
 	local securityAttribute: number =  arg_ref:GetAttribute("security")
 
 	door_ref:SetPrimaryPartCFrame(arg_ref.CFrame)
@@ -38,12 +38,13 @@ local addToken = function(itterationID: number, arg_ref: Part, arg_security: num
 	local children = arg_ref:GetChildren()
 
 	for itteration = 1, #children do
-		if children[itteration].Name == "cardHolder" and securityAttribute ~= 0 then
-			local cardHolder = replicatedStorage.Assets.Doors.cardHolder:Clone()
+		if children[itteration].Name == "cardHolder" and children[itteration]:IsA("BasePart") and securityAttribute ~= 0 then
+			local cardHolder: any = replicatedStorage.Assets.Doors.cardHolder:Clone()
+			local child: BasePart = children[itteration] :: BasePart
 			cardHolder.PrimaryPart.BrickColor = perms.getColor(securityAttribute)
 			cardHolder.display.ui.value.Text = securityAttribute
-			cardHolder.Parent = workspace.LevelInteractions.KeycardHolders
-			cardHolder:SetPrimaryPartCFrame(children[itteration].CFrame)
+			cardHolder.Parent = levelInteractions.KeycardHolders
+			cardHolder:SetPrimaryPartCFrame(child.CFrame)
 			table.insert(keycardSet, cardHolder)
 		end
 	end
@@ -102,9 +103,9 @@ local addToken = function(itterationID: number, arg_ref: Part, arg_security: num
 		return PP
 	end
 	
-	door_ref.Name =	 string.format("%s%s%s", itterationID, "_", arg_ref.Name) -- Create unique identifiers for clients to reference.
+	door_ref.Name =	 string.format("%s%s%s", tostring(itterationID), "_", arg_ref.Name) -- Create unique identifiers for clients to reference.
 	arg_ref:Destroy()
-	door_ref.Parent = workspace.LevelInteractions.ServerDoors
+	door_ref.Parent = levelInteractions.ServerDoors
 
 	blockStorage[itterationID] = token
 
@@ -121,9 +122,9 @@ function class.init()
 
 	local keycardHolder_Folder: Folder = Instance.new("Folder")
 	keycardHolder_Folder.Name = "KeycardHolders"
-	keycardHolder_Folder.Parent = workspace.LevelInteractions
+	keycardHolder_Folder.Parent = levelInteractions
 
-	for itteration, value in pairs(workspace.LevelInteractions.ServerDoors:GetChildren()) do
+	for itteration, value in pairs(levelInteractions.ServerDoors:GetChildren()) do
 		addToken(itteration, value)
 	end
 

@@ -2,8 +2,10 @@
 
 local class: any = {}
 
-local replicatedStorage: ReplicatedStorage = game:GetService("ReplicatedStorage")
+local replicatedStorage = game:GetService("ReplicatedStorage") :: any
 local textService: TextService = game:GetService("TextService")
+
+local levelInteractions = workspace:FindFirstChild("LevelInteractions") :: any
 
 type recordType = {
 	text: string,
@@ -44,6 +46,7 @@ function class.init()
 		elseif state == "messageCount" then
 			return messageCount
 		end
+		return nil
 	end
 
 	local re: RemoteEvent = Instance.new("RemoteEvent")
@@ -57,10 +60,11 @@ function class.init()
 		local passCheck: boolean = false
 
 		-- Check if hostName variable is what the server recognizes
-		local computerList = workspace.LevelInteractions.ChatComputers:GetChildren()
+		local computerList = levelInteractions.ChatComputers:GetChildren()
 		for i = 1, #computerList do
 			if computerList[i]:GetAttribute("hostName") == hostComputer then
-				if (computerList[i].Position - client.Character.PrimaryPart.Position).Magnitude <= 30 then -- good to check the position of a player who is sending
+				local char = client.Character
+				if char and (computerList[i].Position - client.Character.PrimaryPart.Position).Magnitude <= 30 then -- good to check the position of a player who is sending
 					passCheck = true
 				end
 				break -- if a comptuer is found, no need to continue the loop
@@ -75,11 +79,11 @@ function class.init()
 			end
 
 			local success, error = pcall(function()
-				filtereredText = textService:FilterStringAsync(stringCap, client.UserId)
+				filtereredText = textService:FilterStringAsync(stringCap, client.UserId) :: TextFilterResult
 			end)
 
 			if not success then
-				warn(string.concat("ERROR: Text Filtering - %s: %s", stringCap, error))
+				warn(string.format("ERROR: Text Filtering - %s: %s", stringCap, error))
 			else
 				addRecord(hostComputer, filtereredText:GetNonChatStringForBroadcastAsync())
 				re:FireAllClients({database = recordDatabase, announcement = false})

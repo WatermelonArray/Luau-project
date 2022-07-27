@@ -14,6 +14,11 @@ alternative to provide support for GitHub.
 I also used [Better Comments](https://github.com/aaron-bond/better-comments)
 throughout this project to help visuallize special and/or important parts of the
 codebase.
+For Luau syntax, linting, ect. I use [Roblox LSP](https://github.com/NightrainsRbx/RobloxLsp).
+This may cause problems with Luau type checking and reference errors in Roblox's studio
+scripting editor. Roblox LSP to some degree understands what happens throughout the project
+as it can handle Rojo synchornization where as the Roblox Editor doesn't interpret the same
+during compile. The project still runs effortlessly even if they are errors in studio.
 
 To view the source code project that I personally interacted with, please visit this
 GitHub link to access the project online:

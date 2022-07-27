@@ -5,12 +5,12 @@ local class: any = {}
 type computerRecord = {
 	ref: Model,
 	screen: SurfaceGui,
-	gui: SurfaceGui,
+	gui: ScreenGui,
 	terminalOn: boolean,
 	debounce: boolean,
 }
 
-local replicatedStorage: ReplicatedStorage = game:GetService("ReplicatedStorage")
+local replicatedStorage = game:GetService("ReplicatedStorage") :: any
 local ChatHook: RemoteFunction = replicatedStorage.Hooks.ChatHook
 local ChatHookSend: RemoteFunction = replicatedStorage.Hooks.ChatHookSend
 
@@ -43,7 +43,7 @@ local function addRecord(ref: Model, screen: SurfaceGui, gui: ScreenGui)
 		end
 	end
 
-	return nil
+	return nil :: any
 end
 
 local function clearList(ref: {any})
@@ -70,7 +70,7 @@ local function addTerminalLines(ref: {any}, gui, waitVar: boolean?, chat: boolea
 		else
 			tl.Text = v.text
 		end
-		tl.Name = i -- to reference for going above 32 lines
+		tl.Name = tostring(i) -- to reference for going above 32 lines
 		tl.LayoutOrder = i
 		tl.TextSize = 96
 		tl.Font = Enum.Font.Arcade
@@ -97,7 +97,7 @@ local function addTerminalLines(ref: {any}, gui, waitVar: boolean?, chat: boolea
 			task.wait(v.duration or 0.05)
 		end
 	end
-	tempMemory = nil -- Clean up memory for gc
+	tempMemory = nil :: any-- Clean up memory for gc
 end
 
 local function updateBottomBar(record)
