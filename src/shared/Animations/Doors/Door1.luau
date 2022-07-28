@@ -49,7 +49,9 @@ function anim.trueState(token: any, timer: number, instant: boolean?)
 	animationB:Play()
 	animationRoot:Play()
 
-	token.ref.trigger.open:Play()
+	if not instant then
+		token.ref.trigger.open:Play()
+	end
 
 end
 
@@ -80,7 +82,9 @@ function anim.falseState(token: any, timer: number, instant: boolean?)
 
 	animationRoot:Play()
 
-	token.ref.trigger.close:Play()
+	if not instant then
+		token.ref.trigger.close:Play()
+	end
 end
 
 return anim

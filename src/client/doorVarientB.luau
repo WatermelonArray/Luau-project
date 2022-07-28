@@ -5,6 +5,7 @@ local class: any = {}
 local replicatedStorage = game:GetService("ReplicatedStorage") :: any
 
 local levelInteractions = workspace:FindFirstChild("LevelInteractions") :: any
+local perms = require(replicatedStorage.Common.doorPermissions) :: any -- a list of usable permissions
 
 -- A type checker to make sure that items being added into memory are in fact data that relate to this type.
 type blockToken = {
@@ -38,7 +39,7 @@ local addToken = function(arg_ref: Part)
 		if children[itteration]:IsA("BasePart") and securityAttribute ~= 0 then
 			local cardHolder: any = replicatedStorage.Assets.Doors.cardHolder:Clone()
 			local child: BasePart = children[itteration] :: BasePart
-		--	cardHolder.PrimaryPart.BrickColor = perms.getColor(securityAttribute)
+			cardHolder.PrimaryPart.BrickColor = perms.getColor(securityAttribute)
 			cardHolder.display.ui.value.Text = securityAttribute
 			cardHolder.Parent = levelInteractions.KeycardHoldersClient
 			cardHolder:SetPrimaryPartCFrame(child.CFrame)

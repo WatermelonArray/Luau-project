@@ -74,25 +74,27 @@ local addToken = function(itterationID: number, arg_ref: Part, arg_security: num
 		PP.Parent = parent
 
 		PP.Triggered:Connect(function(client: Player)
-			if token.debounce and perms.getSecurityPerms(client, token.security) then
-				token.state = not token.state
-
+			if token.debounce  then
+				
 				local timer: number = 0
-
-				perms.getSecurityPerms(client, token.security)
-
+				
+				local access: boolean = perms.getSecurityPerms(client, token.security)
+				
 				if token.debounce then
-
+					
 					token.debounce = false
-
-					if token.state then
-						if parent.Name == "cardHolder" and parent:IsA("Model") then
-							timer = 0.5
-							animList["cardReader"].playState(parent, timer)
+					
+					if parent.Name == "cardHolder" and parent:IsA("Model") then
+						timer = 0.5
+						animList["cardReader"].playState(parent, timer, perms.getSecurityCode(client), token.security)
+					end
+					if access then
+						token.state = not token.state
+						if token.state then
+							animList[token.doorType].trueState(token, timer, false)
+						else
+							animList[token.doorType].falseState(token, timer, false)
 						end
-						animList[token.doorType].trueState(token, timer, false)
-					else
-						animList[token.doorType].falseState(token, timer, false)
 					end
 
 					task.delay(2 + timer, function() token.debounce = true end) -- Create thread and execute after 4 seconds in the task scheduler

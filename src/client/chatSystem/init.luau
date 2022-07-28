@@ -244,7 +244,6 @@ function class.init()
 						screen.render.main.Visible = true
 						updateBottomBar(record)
 						local chatList: {{text:string, host: string, timestamp: string}} = ChatHook:InvokeServer("messageLoad") -- grab message
-						print(chatList)
 						addTerminalLines(chatList, screen.render.maini, true, true, record)
 
 						screen.render.bottom.Visible = true

@@ -14,18 +14,14 @@ alternative to provide support for GitHub.
 I also used [Better Comments](https://github.com/aaron-bond/better-comments)
 throughout this project to help visuallize special and/or important parts of the
 codebase.
-For Luau syntax, linting, ect. I use [Roblox LSP](https://github.com/NightrainsRbx/RobloxLsp).
-This may cause problems with Luau type checking and reference errors in Roblox's studio
-scripting editor. Roblox LSP to some degree understands what happens throughout the project
-as it can handle Rojo synchornization where as the Roblox Editor doesn't interpret the same
-during compile. The project still runs effortlessly even if they are errors in studio.
+For Luau syntax, linting, type checking, ect. - I use [Roblox LSP](https://github.com/NightrainsRbx/RobloxLsp).
 
 To view the source code project that I personally interacted with, please visit this
 GitHub link to access the project online:
-* https://www.github.com/
+* https://www.github.com/WatermelonArray/Luau-project
 
 Or by visiting the Roblox place that contains these files in a Roblox format:
-* https://www.roblox.com
+* https://www.roblox.com/games/10368756617
 
 ## Getting started
 To build the place from scratch, use:
@@ -73,7 +69,7 @@ trial:
 For this trial, I made a simple system that would showcase the code for my system
 server side only. These files are located in:
 
-* [src/server/doorVariantA/](srs/server/doorVariantB)
+* [src/server/doorVariantA.luau](srs/server/doorVariantA.luau)
 (game.ServerScriptService.server.doorVarientA)
 * [srs/shared/Animations/Doors/](src/shared/Animations/Doors)
 (game.ReplicatedStorage.Common.Animations.Doors)
@@ -88,7 +84,7 @@ To further make this system easier to use, it grabs the door model by name - mea
 multiple door variants can be used and the developer in question can easily edit what
 door will be spawned in the desired locations.
 
-Using luau, I am able to create a simple database of all doors in the game, thus
+Using luau, I am able to create a simple database of all doors in the game; 
 providing flexibality in how data of the door classes are stored in tokens. The
 server will handle all the important aspects such as providing ProximityPrompts to
 the door models and when triggered, will allow the door to run checks on the player's
@@ -99,6 +95,11 @@ easy to modify for both, scripters and animators. It uses only 2 functions that 
 required by using the animation type made with luau: `trueState()` and `falseState()`.
 These two functions are what will be triggered if the door will close or open
 depending on their "state" in the corresponding token.
+
+The system will even check the door's security level and provide keycard readers.
+You can place these keycard readers anywhere in the map and multiple as well. This
+allows flexibility of what kind of scenario you wish to have as a developer. It also
+check if the door security is 0 - meaning it shouldn't have any keycard readers.
 
 This system however does have flaws. Currently, the animations run server sided and
 when played, looks choppy as their are depending on the server's tick rate.
@@ -111,7 +112,7 @@ sided and ONLY rendered client sided. To do this, we must set up a server databa
 system that can handle client requests and respond back to them like traditional
 client > server > client architechures. The server files are located in:
 
-* [src/server/doorVariantB/](/src/server/doorVarientB/)
+* [src/server/doorVariantB.luau](/src/server/doorVarientB.luau)
 (game.ServerScriptService.server.doorVariantB)
 
 In these files, you can see the use of optimizing array structures for data packets
@@ -124,17 +125,17 @@ for checking player ranks in other systems and also checking the distance from t
 door itself.
 
 Just like the previous variant, the server will compile all the doors into
-identifiers but will **not** remove the node. Instead, the node will be sent to all
-clients when they request the node positions for processing. The server makes a list
-in the database of each node including a token the server generates that includes the
-state of each door corresponding to the node.
+identifiers but will **not** remove the node server side. Instead, the node will
+be sent to all clients when they request the node positions for processing. The
+server makes a list in the database of each node including a token the server
+generates that includes the state of each door corresponding to the node.
 
 Lastly, once it is done compiling, it will also provide a hook for the clients to
 send data to in `game.ReplicatedStorage.Hooks`.
 
 Lets see how the client can access these nodes. The files for this are located:
 
-* [src/client/doorVarientB](srs/client/doorVariantB/)
+* [src/client/doorVarientB.luau](srs/client/doorVariantB.luau)
 (game.StarterPlayer.StarterPlayerScripts.client.variantB)
 **or** (game.Players.***ClientName***.PlayerScripts.client.variantB)
 
@@ -175,8 +176,35 @@ are out of sync.
 This system requires the server to store messages sent by players in a table
 database. We can also set a certain amount of messages that the database should store
 to prevent high memory usages after super long server sessions (super unlikely but
-just to be safe!).
+just to be safe!). I can monitor and filter messages server side easily, and remove
+old messages thanks to how I store the chat data. The clients and just request the
+chat log when ever but can not tamper with it.
 
+In order to send messages to the server, a computer node must be used. This computer
+node will have the server check the distance from the client so that exploiters
+can not send messages from anywhere. It also narrows down who is sending messages
+on that computer node easier. If you are way out of range or somehow managed
+to find a computer node that is not in the server list, it will kick you from the
+game.
 
+These computer nodes replicated a more 80s style with a fancy boot animation sequence
+and interface. Unfortunately, due to time constraints, I implemented a character
+limit on the interface so that players can not send text that clips out of the UI. It
+is mobile compatible as it also can send messages using the "enter" key on software
+based keyboards like gboard for android.
+
+Lastly, these computer interfaces are entirely client sided. Turning them on simply
+means only you see the changes. The reasoning for this is because some players
+may not want this computer to be turned on and sending message notifications through
+out their session.
+
+The files for this system are found:
+
+* [src/client/chatSystem](srs/client/chatSystem/)
+(game.StarterPlayer.StarterPlayerScripts.client.chatSystem)
+**or** (game.Players.***ClientName***.PlayerScripts.client.chatSystem)
+
+* [srs/shared/Animations/Doors/](srs/shared/Animations/Doors/)
+(game.ReplicatedStorage.Common.Animations.Doors)
 
 ## For further enquires, please contact my Discord: **`Watermelon#3990`**

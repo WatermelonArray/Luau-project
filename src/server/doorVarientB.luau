@@ -54,7 +54,6 @@ function class.init()
 		else
 
 			local access = perms.getSecurityPerms(client, token.security)
-			print(access)
 
 			if dataPacket.request == "DoorToggle" and token and token.debounce then
 
