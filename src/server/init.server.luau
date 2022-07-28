@@ -1,7 +1,7 @@
 --!strict
 
-local doorSystemA = require(script.doorVarientA)
-local doorSystemB = require(script.doorVarientB)
+local doorSystemA = require(script.doorVariantA)
+local doorSystemB = require(script.doorVariantB)
 local chatSystem = require(script.chatSystem)
 
 doorSystemB.init()

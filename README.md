@@ -70,7 +70,7 @@ For this trial, I made a simple system that would showcase the code for my syste
 server side only. These files are located in:
 
 * [src/server/doorVariantA.luau](srs/server/doorVariantA.luau)
-(game.ServerScriptService.server.doorVarientA)
+(game.ServerScriptService.server.doorVariantA)
 * [srs/shared/Animations/Doors/](src/shared/Animations/Doors)
 (game.ReplicatedStorage.Common.Animations.Doors)
 
@@ -106,13 +106,13 @@ when played, looks choppy as their are depending on the server's tick rate.
 
 Thus I provide you an alternative solution:
 
-## Varient B
-Varient B applies the current system of Varient A but makes the door tokens client
+## Variant B
+Variant B applies the current system of Variant A but makes the door tokens client
 sided and ONLY rendered client sided. To do this, we must set up a server database
 system that can handle client requests and respond back to them like traditional
 client > server > client architechures. The server files are located in:
 
-* [src/server/doorVariantB.luau](/src/server/doorVarientB.luau)
+* [src/server/doorVariantB.luau](/src/server/doorVariantB.luau)
 (game.ServerScriptService.server.doorVariantB)
 
 In these files, you can see the use of optimizing array structures for data packets
@@ -135,7 +135,7 @@ send data to in `game.ReplicatedStorage.Hooks`.
 
 Lets see how the client can access these nodes. The files for this are located:
 
-* [src/client/doorVarientB.luau](srs/client/doorVariantB.luau)
+* [src/client/doorVariantB.luau](srs/client/doorVariantB.luau)
 (game.StarterPlayer.StarterPlayerScripts.client.variantB)
 **or** (game.Players.***ClientName***.PlayerScripts.client.variantB)
 
@@ -168,7 +168,7 @@ are out of sync.
 	DataPackets being thrown around on the network from only server sided animations
 	- less laggier in both frames and network pings!
 
-### Hopefully you do consider this option more viable than varient A!
+### Hopefully you do consider this option more viable than Variant A!
 
 ---
 

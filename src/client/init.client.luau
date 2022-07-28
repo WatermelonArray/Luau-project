@@ -1,6 +1,6 @@
 --!strict
 
-local doorClient = require(script.doorVarientB)
+local doorClient = require(script.doorVariantB)
 local chatSystem = require(script.chatSystem)
 
 
