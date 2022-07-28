@@ -29,6 +29,18 @@ local colors: {[number]: BrickColor} = {
 
 class.getColor = function(security: number) return colors[security] or BrickColor.new("Flame reddish orange") end
 
+class.getSecurityCode = function(client: Player)
+
+	local team: Team? = client.Team :: Team
+
+	if team then
+		local teamString: string = team.Name
+		return perms[teamString] or 0
+	end
+
+	return 0
+end
+
 class.getSecurityPerms = function(client: Player, security: number)
 
 	local team: Team? = client.Team :: Team

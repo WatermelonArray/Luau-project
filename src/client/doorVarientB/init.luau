@@ -5,6 +5,7 @@ local class: any = {}
 local replicatedStorage = game:GetService("ReplicatedStorage") :: any
 
 local levelInteractions = workspace:FindFirstChild("LevelInteractions") :: any
+
 -- A type checker to make sure that items being added into memory are in fact data that relate to this type.
 type blockToken = {
 	ref: Model,
@@ -124,15 +125,21 @@ function class.init()
 			local timer: number = 0
 
 			if dataPacket.token.debounce then
-				if dataPacket.token.state then
-					if dataPacket.cardID then
-						timer = 0.5
-						animList["cardReader"].playState(blockStorage[doorID].keycardHolders[dataPacket.cardID], timer)
+				if dataPacket.cardID then
+					timer = 0.5
+					animList["cardReader"].playState(
+						blockStorage[doorID].keycardHolders[dataPacket.cardID],
+						timer,
+						dataPacket.clientSecurity,
+						dataPacket.token.security
+					)
+				end
+				if dataPacket.access then
+					if dataPacket.token.state then
+						animList[dataPacket.token.doorType].trueState(ref, timer, dataPacket.instant)
+					else
+						animList[dataPacket.token.doorType].falseState(ref, timer, dataPacket.instant)
 					end
-
-					animList[dataPacket.token.doorType].trueState(ref, timer, dataPacket.instant)
-				else
-					animList[dataPacket.token.doorType].falseState(ref, timer, dataPacket.instant)
 				end
 			end
 		elseif dataPacket.response == "allDoorsUpdate" then

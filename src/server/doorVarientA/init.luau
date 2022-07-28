@@ -48,7 +48,7 @@ local addToken = function(itterationID: number, arg_ref: Part, arg_security: num
 			table.insert(keycardSet, cardHolder)
 		end
 	end
-	
+
 	local token: blockToken = {
 		doorID = itterationID,                            --* assigns a referencable identifier for clients
 		ref = door_ref,                                   --* assigns a model reference for the token
@@ -102,7 +102,6 @@ local addToken = function(itterationID: number, arg_ref: Part, arg_security: num
 
 		return PP
 	end
-	
 	door_ref.Name =	 string.format("%s%s%s", tostring(itterationID), "_", arg_ref.Name) -- Create unique identifiers for clients to reference.
 	arg_ref:Destroy()
 	door_ref.Parent = levelInteractions.ServerDoors
@@ -127,11 +126,6 @@ function class.init()
 	for itteration, value in pairs(levelInteractions.ServerDoors:GetChildren()) do
 		addToken(itteration, value)
 	end
-
-	--! Remove below for release builds of your game
-
-	blockStorage[1].security = 1 --* A test to see if security permissions are taken into account
---?	                                 spoiler: they do!
 
 end
 

@@ -66,19 +66,19 @@ function class.init()
 
 				-- Use a request string, a token and a security integer to verify the token and the user the access permissions of this remote event.
 				if passCheck then
-					if access then
-						token.state = not token.state
-						re:FireAllClients({
-							response = "doorUpdate",
-							token = token,
-							doorID = dataPacket.doorID,
-							instant = false,
-							cardID = dataPacket.readerID
-						})
-						token.debounce = false
+					token.state = not token.state
+					re:FireAllClients({
+						response = "doorUpdate",
+						token = token,
+						instant = false,
+						doorID = dataPacket.doorID,
+						cardID = dataPacket.readerID,
+						clientSecurity = perms.getSecurityCode(client),
+						access = access
+					})
+					token.debounce = false
 
-						task.delay(2, function() token.debounce = true end) -- Create thread and execute after 4 seconds in the task scheduler
-					end
+					task.delay(2, function() token.debounce = true end) -- Create thread and execute after 4 seconds in the task scheduler
 				else
 					client:Kick("Something went wrong")
 				end
