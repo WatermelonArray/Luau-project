@@ -33,9 +33,9 @@ function anim.trueState(token: any, timer: number, instant: boolean?)
 	local a_CFRAME: CFrameValue = Instance.new("CFrameValue")
 	local b_CFRAME: CFrameValue = Instance.new("CFrameValue")
 
-	local goalRoot: {CFrame} = {Value = originalCFrame * pivotPoint:Inverse() * CFrame.Angles(0, 2, 0)}
-	local goalA: {CFrame} = {Value = CFrame.new(0, 0, -0.05)}
-	local goalB: {CFrame} = {Value =  CFrame.Angles(0, math.rad(-20), 0)}
+	local goalRoot: {Value: CFrame} = {Value = originalCFrame * pivotPoint:Inverse() * CFrame.Angles(0, 2, 0)}
+	local goalA: {Value: CFrame} = {Value = CFrame.new(0, 0, -0.05)}
+	local goalB: {Value: CFrame} = {Value =  CFrame.Angles(0, math.rad(-20), 0)}
 
 	root_CFRAME:GetPropertyChangedSignal("Value"):Connect(function() r:SetPrimaryPartCFrame(root_CFRAME.Value * pivotPoint) end)
 	a_CFRAME:GetPropertyChangedSignal("Value"):Connect(function() a.CFrame = (r:GetPrimaryPartCFrame() * a_OFFSET) * a_CFRAME.Value end)
@@ -70,7 +70,7 @@ function anim.falseState(token: any, timer: number, instant: boolean?)
 	local root_CFRAME: CFrameValue = Instance.new("CFrameValue")
 	root_CFRAME.Value = originalCFrame * pivotPoint:Inverse() * CFrame.Angles(0, 2, 0)
 
-	local goalRoot: {CFrame} = {Value = originalCFrame * pivotPoint:Inverse()}
+	local goalRoot: {Value: CFrame} = {Value = originalCFrame * pivotPoint:Inverse()}
 	
 	root_CFRAME:GetPropertyChangedSignal("Value"):Connect(function() r:SetPrimaryPartCFrame(root_CFRAME.Value * pivotPoint) end)
 

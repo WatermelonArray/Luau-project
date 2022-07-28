@@ -38,13 +38,6 @@ class.getSecurityPerms = function(client: Player, security: number)
 
 		local result = perms[teamString] or 0
 
-		print(perms[teamString])
-		print(security)
-		print(result)
-		print(perms[teamString] >= 1)
-
-		print()
-
 		if teamString then
 			return result >= security
 		end

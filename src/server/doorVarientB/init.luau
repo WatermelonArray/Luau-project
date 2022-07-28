@@ -58,9 +58,9 @@ function class.init()
 
 			if dataPacket.request == "DoorToggle" and token and token.debounce then
 
-				local char = client.Character
+				local char: Model? = client.Character
 				local passCheck: boolean = false
-				if char and (token.position - client.Character.PrimaryPart.Position).Magnitude <= 16 then -- good to check the position of a player who is sending
+				if char and char.PrimaryPart and (token.position - char.PrimaryPart.Position).Magnitude <= 16 then -- good to check the position of a player who is sending
 					passCheck = true
 				end
 

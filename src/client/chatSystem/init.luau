@@ -2,17 +2,19 @@
 
 local class: any = {}
 
+local replicatedStorage = game:GetService("ReplicatedStorage") :: any
+
+local levelInteractions = workspace:FindFirstChild("LevelInteractions") :: any
 type computerRecord = {
-	ref: Model,
-	screen: SurfaceGui,
-	gui: ScreenGui,
+	ref: any,
+	screen: any,
+	gui: any,
 	terminalOn: boolean,
 	debounce: boolean,
 }
 
-local replicatedStorage = game:GetService("ReplicatedStorage") :: any
 local ChatHook: RemoteFunction = replicatedStorage.Hooks.ChatHook
-local ChatHookSend: RemoteFunction = replicatedStorage.Hooks.ChatHookSend
+local ChatHookSend: RemoteEvent = replicatedStorage.Hooks.ChatHookSend
 
 local colorOn: Color3 = Color3.fromHex("#7fff7f")
 local colorOff: Color3 = Color3.fromHex("#ff6464")
@@ -104,7 +106,7 @@ local function updateBottomBar(record)
 
 	local messages: number = ChatHook:InvokeServer("messageCount")
 
-	record.screen.render.bottom.messageCount.Text = string.format("Messages: %s", messages)
+	record.screen.render.bottom.messageCount.Text = string.format("Messages: %s", tostring(messages))
 	record.screen.render.bottom.hostName.Text = record.ref.Name
 
 end
@@ -131,10 +133,10 @@ end)
 function class.init()
 	local screenStorage: Folder = Instance.new("Folder")
 	screenStorage.Parent = game:GetService("Players").LocalPlayer.PlayerGui
-	local nodes = workspace.LevelInteractions.ChatComputers:GetChildren()
+	local nodes = levelInteractions.ChatComputers:GetChildren()
 	local chatUIOpen: boolean = false
 
-	local chatUI: TextLabel = game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("chatUI")
+	local chatUI: any = game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("chatUI") :: TextLabel
 
 	local currentRecord: computerRecord
 
@@ -171,15 +173,15 @@ function class.init()
 
 		local value: Part = nodes[itteration]
 
-		local computer: Model = replicatedStorage.Assets.ChatTerminals[value.Name]:Clone()
+		local computer: any = replicatedStorage.Assets.ChatTerminals[value.Name]:Clone() :: Model
 		computer:SetPrimaryPartCFrame(value.CFrame)
-		computer.Parent = workspace.LevelInteractions.ChatComputers
+		computer.Parent = levelInteractions.ChatComputers
 
 		computer.Name = value:GetAttribute("hostName")
 
 		value:Destroy()
 
-		local screen: SurfaceGui = replicatedStorage.Assets.GUIs.chatTerminal:Clone()
+		local screen: any = replicatedStorage.Assets.GUIs.chatTerminal:Clone() :: SurfaceGui
 		screen.Parent = screenStorage
 		screen.Adornee = computer.screen
 
@@ -243,7 +245,7 @@ function class.init()
 						updateBottomBar(record)
 						local chatList: {{text:string, host: string, timestamp: string}} = ChatHook:InvokeServer("messageLoad") -- grab message
 						print(chatList)
-						addTerminalLines(chatList, screen.render.main, true, true, record)
+						addTerminalLines(chatList, screen.render.maini, true, true, record)
 
 						screen.render.bottom.Visible = true
 						task.wait(1)

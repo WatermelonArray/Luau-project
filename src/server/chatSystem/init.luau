@@ -37,16 +37,16 @@ end
 
 function class.init()
 
-	local rf: RemoteFunction = Instance.new("RemoteFunction")
+	local rf = Instance.new("RemoteFunction") :: any
 	rf.Name = "ChatHook"
 	rf.Parent = replicatedStorage.Hooks
 	rf.OnServerInvoke = function(client: Player, state: string)
 		if state == "messageLoad" then
 			return recordDatabase
 		elseif state == "messageCount" then
-			return messageCount
+			return messageCount :: any
 		end
-		return nil
+		return nil :: any
 	end
 
 	local re: RemoteEvent = Instance.new("RemoteEvent")
@@ -63,8 +63,8 @@ function class.init()
 		local computerList = levelInteractions.ChatComputers:GetChildren()
 		for i = 1, #computerList do
 			if computerList[i]:GetAttribute("hostName") == hostComputer then
-				local char = client.Character
-				if char and (computerList[i].Position - client.Character.PrimaryPart.Position).Magnitude <= 30 then -- good to check the position of a player who is sending
+				local char: Model? = client.Character
+				if char and char.PrimaryPart and (computerList[i].Position - char.PrimaryPart.Position).Magnitude <= 30 then -- good to check the position of a player who is sending
 					passCheck = true
 				end
 				break -- if a comptuer is found, no need to continue the loop

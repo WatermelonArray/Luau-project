@@ -2,13 +2,14 @@
 
 local anim: any = {}
 
+local replicatedStorage = game:GetService("ReplicatedStorage") :: any
 local tweenService = game:GetService("TweenService")
 
 function anim.playState(ref: Model, timer: number)
 
 	local twDetail: TweenInfo = TweenInfo.new(timer, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut, 0, true)
 
-	local card = game:GetService("ReplicatedStorage").Assets.Tools.Keycard.Handle:Clone()
+	local card = replicatedStorage.Tools.Keycard.Handle:Clone()
 	card.Anchored = true
 	card.Parent = workspace
 
